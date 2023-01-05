@@ -1,12 +1,38 @@
 const express = require("express")
 const dotenv = require("dotenv")
+dotenv.config();
 const dbConnect = require("./config/db/dbConnect")
 
+const userRoutes = require("./route/users/usersRoute");
 
-dotenv.config();
+
 const app = express();
 //DB
 dbConnect();
+
+//Middleware
+app.use(express.json())
+//Users route
+app.use('/api/users',userRoutes)
+
+
+// //Login
+// app.post("/api/users/login",(req,res)=>{
+//     //business logic
+//     res.json({user:"user login"})
+// })
+
+// //fetch all users
+// app.get("/api/users/",(req,res)=>{
+//     //business logic
+//     res.json({user:'fetch all users'})
+// })
+
+
+
+
+
+
 
 //server
 

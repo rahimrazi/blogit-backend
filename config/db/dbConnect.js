@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-mongoose.set('strictQuery', false);
+
 const dbConnect = async() => {
     try{
         await mongoose.connect(process.env.MONGODB_URL,{
-            // useCreateIndex: true,
-            // useFindAndModify: true,
+            useCreateIndex: true,
+            useFindAndModify: true,
             useUnifiedTopology:true,
             useNewUrlParser:true
         })
