@@ -114,6 +114,57 @@ const userProfileCtrl = expressAsyncHandler(async(req,res)=>{
   }
 })
 
+//-----------------------------------------
+//Update user profile
+//-----------------------------------------
+
+
+const updateUserCtrl = expressAsyncHandler(async(req,res)=>{
+  const {_id} = req?.user;
+  console.log(_id)
+  validateMongodbId(_id)
+
+  const user = await User.findByIdAndUpdate(_id,{
+    
+      firstName: req?.body?.firstName,
+      lastName: req?.body?.lastName,
+      email: req?.body?.email,
+      bio:req?.body?.bio,
+  },{
+    new: true,
+    runValidators: true,
+  })
+  
+  res.json(user)
+})
+
+//-----------------------
+//Update password
+//-----------------------
+
+const updatePasswordCtrl = expressAsyncHandler(async(req,res)=>{
+  //destructure the login user
+  const {_id} = req?.user;
+  const {password} = req.body
+  
+  validateMongodbId(_id)
+  //Find the user by Id
+  const user = await User.findById(_id)
+
+  
+  if(password){
+    user.password = password;
+    const updatedUser = await user.save();
+    res.json(updatedUser)
+
+  }else{
+  res.json(user)
+}
+
+
+})
+
+
 //exports
 module.exports = {
   userRegisterCtrl,
@@ -121,5 +172,8 @@ module.exports = {
   fetchUsersCtrl,
   deleteUsersCtrl,
   fetchUserDetailsCtrl,
-  userProfileCtrl
+  userProfileCtrl,
+  updateUserCtrl,
+  updatePasswordCtrl
+
 };
