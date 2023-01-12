@@ -9,7 +9,8 @@ const {
   updateUserCtrl,
   updatePasswordCtrl,
   followingUserCtrl,
-  unfollowUserCtrl
+  unfollowUserCtrl,
+  blockUserCtrl
 } = require("../../controllers/users/usersCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const userRoutes = express.Router();
@@ -20,6 +21,7 @@ userRoutes.get("/", authMiddleware, fetchUsersCtrl);
 userRoutes.put("/password", authMiddleware, updatePasswordCtrl);
 userRoutes.put("/follow", authMiddleware, followingUserCtrl);
 userRoutes.put("/unfollow", authMiddleware, unfollowUserCtrl)
+userRoutes.put("/block-user/:id", authMiddleware, blockUserCtrl)
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/:id", authMiddleware, updateUserCtrl);
 userRoutes.delete("/:id", deleteUsersCtrl);
