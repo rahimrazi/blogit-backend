@@ -231,11 +231,9 @@ const unfollowUserCtrl = expressAsyncHandler(async (req, res) => {
 //---------------------
 
 const blockUserCtrl = expressAsyncHandler(async (req, res) => {
-  
- 
-  const { id } = req.params
-  
-  validateMongodbId(id)
+  const { id } = req.params;
+
+  validateMongodbId(id);
   const user = await User.findByIdAndUpdate(
     id,
     {
@@ -244,9 +242,26 @@ const blockUserCtrl = expressAsyncHandler(async (req, res) => {
     { new: true }
   );
   res.json(user);
-  console.log(user)
+  console.log(user);
 });
+//---------------------
+//Un Block user
+//---------------------
 
+const unBlockUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  validateMongodbId(id);
+  const user = await User.findByIdAndUpdate(
+    id,
+    {
+      isBlocked: false,
+    },
+    { new: true }
+  );
+  res.json(user);
+  console.log(user);
+});
 //exports
 module.exports = {
   userRegisterCtrl,
@@ -260,4 +275,5 @@ module.exports = {
   followingUserCtrl,
   unfollowUserCtrl,
   blockUserCtrl,
+  unBlockUserCtrl,
 };
