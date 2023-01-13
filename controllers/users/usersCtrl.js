@@ -3,7 +3,9 @@ const nodemailer = require("nodemailer");
 const generateToken = require("../../config/token/generateToken");
 const User = require("../../model/user/User");
 const validateMongodbId = require("../../utils/validateMongodbId");
-const crypto = require("crypto")
+const crypto = require("crypto");
+const cloudinaryUploadImg = require("../../utils/cloudinary");
+
 
 //----------------------------------------------------------------
 //Register
@@ -340,8 +342,20 @@ const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
 //profile pic upload
 //----------------------------
 const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
-  console.log(req.file);
-  res.json("upload");
+  //find the logged in user
+  const{_id}=req.user
+  
+  //1.get the path to image file
+  const localPath = `public/images/profile/${req.file.filename}`;
+  
+  //2.upload to cloudinary
+  const imgUploaded =await cloudinaryUploadImg(localPath);
+
+  const foundUser = await User.findByIdAndUpdate(_id,{
+    profilePhoto: imgUploaded?.url
+  },{new:true})
+  console.log(imgUploaded)
+  res.json(foundUser);
 });
 //exports
 module.exports = {
