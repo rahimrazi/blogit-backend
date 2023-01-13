@@ -21,13 +21,13 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-const profilePhotoUpload = multer({
+const photoUpload = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
   limits: { fileSize: 2000000 },
 });
 
-//image resizee
+//profile image resize
 const profilePhotoResize = async (req, res, next) => {
   // chek if there is no file
   if (!req.file) return next();
@@ -41,4 +41,19 @@ const profilePhotoResize = async (req, res, next) => {
     .toFile(path.join(`public/images/profile/${req.file.filename}`));
   next();
 };
-module.exports = { profilePhotoUpload, profilePhotoResize };
+
+//post image resize
+const postImageResize = async (req, res, next) => {
+  // chek if there is no file
+  if (!req.file) return next();
+
+  req.file.filename = `user-${Date.now()}-${req.file.originalname}`;
+
+  await sharp(req.file.buffer)
+    .resize(500,500)
+    .toFormat("jpg")
+    .jpeg({ quality: 90 })
+    .toFile(path.join(`public/images/posts/${req.file.filename}`));
+  next();
+};
+module.exports = { photoUpload, profilePhotoResize,postImageResize };

@@ -19,8 +19,8 @@ const {
 } = require("../../controllers/users/usersCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const {
-  profilePhotoUpload,profilePhotoResize,
-} = require("../../middlewares/uploads/profilePhotoUpload");
+  photoUpload,profilePhotoResize,
+} = require("../../middlewares/uploads/photoUpload");
 const userRoutes = express.Router();
 
 userRoutes.post("/register", userRegisterCtrl);
@@ -30,7 +30,7 @@ userRoutes.put("/password", authMiddleware, updatePasswordCtrl);
 userRoutes.put(
   "/profilephoto-upload",
   authMiddleware,
-  profilePhotoUpload.single("image"),
+  photoUpload.single("image"),
   profilePhotoResize,
   profilePhotoUploadCtrl
 );

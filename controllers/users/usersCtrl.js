@@ -1,5 +1,6 @@
 const expressAsyncHandler = require("express-Async-Handler");
 const nodemailer = require("nodemailer");
+const fs = require("fs");
 const generateToken = require("../../config/token/generateToken");
 const User = require("../../model/user/User");
 const validateMongodbId = require("../../utils/validateMongodbId");
@@ -354,8 +355,8 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   const foundUser = await User.findByIdAndUpdate(_id,{
     profilePhoto: imgUploaded?.url
   },{new:true})
-  console.log(imgUploaded)
-  res.json(foundUser);
+  fs.unlinkSync(localPath)
+  res.json(imgUploaded);
 });
 //exports
 module.exports = {

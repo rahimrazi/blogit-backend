@@ -4,8 +4,10 @@ const cors = require("cors")
 dotenv.config();
 const dbConnect = require("./config/db/dbConnect")
 
+
 const userRoutes = require("./route/users/usersRoute");
 const { errorHandler,notFound } = require("./middlewares/error/errorHandler");
+const postRoute = require("./route/posts/postRoute");
 
 
 
@@ -21,6 +23,8 @@ app.use(express.json())
 app.use(cors())
 //Users route
 app.use('/api/users',userRoutes)
+//Posts route
+app.use('/api/posts',postRoute)
 
 
 // //Login
