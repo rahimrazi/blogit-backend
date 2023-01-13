@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 
 
@@ -134,6 +135,17 @@ const userSchema =  new mongoose.Schema({
     return await bcrypt.compare(enteredPassword, this.password);
   };
   
+//Verify account
+userSchema.methods.createAccountVerificationToken =async function(){
+
+    //crate a token
+    const verificationToken = crypto.randomBytes(32).toString("hex")
+    this.accountVerificationToken = crypto.createHash('sha256').update(verificationToken).digest("hex");
+    //token expire after 10 minutes
+    this.accountVerificationTokenExpires =Date.now()+30*60*1000
+
+    return verificationToken;
+}
 
 
 //compile schema into model

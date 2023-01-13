@@ -1,7 +1,9 @@
 const expressAsyncHandler = require("express-Async-Handler");
+const nodemailer = require("nodemailer");
 const generateToken = require("../../config/token/generateToken");
 const User = require("../../model/user/User");
 const validateMongodbId = require("../../utils/validateMongodbId");
+const crypto = require("crypto")
 
 //----------------------------------------------------------------
 //Register
@@ -262,6 +264,85 @@ const unBlockUserCtrl = expressAsyncHandler(async (req, res) => {
   res.json(user);
   console.log(user);
 });
+
+//-------------------------
+//account verification - send mail - generate email verificaiton token
+//----------------------------
+
+const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
+  const loginUser = req.user.id;
+  console.log(loginUser);
+  const user = await User.findById(loginUser);
+  console.log(user);
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+  const loginUserId = req.user.id;
+  // const user = await User.findById(loginUserId);
+  // console.log(user);
+  try {
+    //generate token
+    const verificationToken = await user.createAccountVerificationToken();
+    //save the user
+    await user.save();
+    console.log(verificationToken);
+
+    const resetURL = `if you are yet to verify your account,verify now within 10  minutes, otherwise ignore this message
+     <a href="http://localhost:3000/verify-account/${verificationToken}"> click to verify</a>`;
+    let mailOptions = {
+      from: "12abdulrahim21@gmail.com",
+      to: user?.email,
+      // to: "devblog.info2022@gmail.com",
+      subject: "blogit Verification",
+      message: "verify your account now",
+      html: resetURL,
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+      if (err) {
+        console.log("Error Occurs", err);
+      } else {
+        console.log("Email sent");
+        res.json(resetURL)
+      }
+    });
+  } catch (error) {
+    res.json(error);
+  }
+});
+//-------------------------
+//account verification 
+//----------------------------
+
+const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
+  const {token} = req.body
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+  console.log(hashedToken);
+
+  //find this user by token
+  const userFound = await User.findOne({
+    accountVerificationToken: hashedToken,
+    accountVerificationTokenExpires: {$gt:new Date()}
+  });
+  if(!userFound) throw new Error("token expired,try again")
+  //update the property to true
+  userFound.isAccountVerified = true
+  userFound.accountVerificationToken=undefined;
+  userFound.accountVerificationTokenExpires=undefined
+  await userFound.save()
+ res.json(userFound)
+})
+//-------------------------
+//profile pic upload
+//----------------------------
+const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
+  console.log(req.file);
+  res.json("upload");
+});
 //exports
 module.exports = {
   userRegisterCtrl,
@@ -276,4 +357,7 @@ module.exports = {
   unfollowUserCtrl,
   blockUserCtrl,
   unBlockUserCtrl,
+  generateVerificationTokenCtrl,
+  accountVerificationCtrl,
+  profilePhotoUploadCtrl
 };
