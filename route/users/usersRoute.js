@@ -31,7 +31,7 @@ userRoutes.put(
   "/profilephoto-upload",
   authMiddleware,
   photoUpload.single("image"),
-  profilePhotoResize,
+  profilePhotoResize, //should resize in frontend
   profilePhotoUploadCtrl
 );
 userRoutes.put("/follow", authMiddleware, followingUserCtrl);
