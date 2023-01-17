@@ -38,7 +38,7 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
       image: imgUploaded?.url,
       user: _id,
     });
-    res.json(imgUploaded);
+    res.json(post);
     //remove uploaded img
     fs.unlinkSync(localPath);
   } catch (error) {

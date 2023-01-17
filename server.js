@@ -9,6 +9,7 @@ const userRoutes = require("./route/users/usersRoute");
 const { errorHandler,notFound } = require("./middlewares/error/errorHandler");
 const postRoute = require("./route/posts/postRoute");
 const commentRoutes = require("./route/comments/commentRoute");
+const categoryRoute = require("./route/category/categoryRoute");
 
 
 
@@ -29,6 +30,8 @@ app.use('/api/users',userRoutes)
 app.use('/api/posts',postRoute)
 //Comments route
 app.use('/api/comments',commentRoutes)
+//Category route
+app.use('/api/category',categoryRoute)
 
 // //Login
 // app.post("/api/users/login",(req,res)=>{
