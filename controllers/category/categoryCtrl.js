@@ -22,24 +22,69 @@ const createCategoryCtrl = expressAsyncHandler(async (req, res) => {
 
 const fetchAllCategoriesCtrl = expressAsyncHandler(async (req, res) => {
   try {
-    const categories = await Category.find({}).populate('user').sort("-createdAt")
-    res.json(categories)
-    
+    const categories = await Category.find({})
+      .populate("user")
+      .sort("-createdAt");
+    res.json(categories);
   } catch (error) {
-    res.json(error)
+    res.json(error);
   }
 });
 //-------------------------
 // fetch single category
 //-------------------------
 const fetchSingleCategoryCtrl = expressAsyncHandler(async (req, res) => {
-    const {id}= req.params
+  const { id } = req.params;
+  try {
+    const category = await Category.findById(id)
+      .populate("user")
+      .sort("-createdAt");
+    res.json(category);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+//-------------------------
+// update category
+//-------------------------
+
+const updateCategoryCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const category = await Category.findByIdAndUpdate(
+      id,
+      {
+        title: req?.body?.title,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.json(category);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//-------------------------
+// delete category
+//-------------------------
+
+const deleteCategoryCtrl = expressAsyncHandler(async (req, res) => {
+    const {id}= req.params;
     try {
-      const category = await Category.findById(id).populate('user').sort("-createdAt")
-      res.json(category)
-      
+        const category = await Category.findByIdAndDelete(id)
+        res.json(category)
     } catch (error) {
-      res.json(error)
+        res.json(error)
     }
-  });
-module.exports = { createCategoryCtrl, fetchAllCategoriesCtrl,fetchSingleCategoryCtrl };
+});
+
+module.exports = {
+  createCategoryCtrl,
+  fetchAllCategoriesCtrl,
+  fetchSingleCategoryCtrl,
+  updateCategoryCtrl,
+  deleteCategoryCtrl,
+};
