@@ -8,6 +8,8 @@ const dbConnect = require("./config/db/dbConnect")
 const userRoutes = require("./route/users/usersRoute");
 const { errorHandler,notFound } = require("./middlewares/error/errorHandler");
 const postRoute = require("./route/posts/postRoute");
+const commentRoutes = require("./route/comments/commentRoute");
+
 
 
 
@@ -25,7 +27,8 @@ app.use(cors())
 app.use('/api/users',userRoutes)
 //Posts route
 app.use('/api/posts',postRoute)
-
+//Comments route
+app.use('/api/comments',commentRoutes)
 
 // //Login
 // app.post("/api/users/login",(req,res)=>{
