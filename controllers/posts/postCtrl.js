@@ -55,10 +55,10 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
   try {
     //check if it has category
     if(hasCategory){
-      const posts = await Post.find({category:hasCategory}).populate("user");
+      const posts = await Post.find({category:hasCategory}).populate("user").populate('comments');
       res.json(posts)
     }else{
-    const posts = await Post.find({}).populate("user");
+    const posts = await Post.find({}).populate("user").populate('comments');
     res.json(posts);
   }
   } catch (error) {
@@ -74,7 +74,7 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const post = await Post.findById(id).populate("user").populate("disLikes").populate("likes");
+    const post = await Post.findById(id).populate("user").populate("disLikes").populate("likes").populate('comments');
     //update number of views
     await Post.findByIdAndUpdate(
       id,

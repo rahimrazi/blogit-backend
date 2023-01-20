@@ -64,6 +64,12 @@ const postSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+//populate 
+postSchema.virtual('comments',{
+  ref:"Comment",
+  foreignField:"post",
+  localField:"_id"
+})
 
 //compile
 const Post = mongoose.model("Post", postSchema);
