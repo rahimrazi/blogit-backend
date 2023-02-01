@@ -45,7 +45,7 @@ userRoutes.post(
 );
 userRoutes.put("/verify-account", authMiddleware, accountVerificationCtrl);
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
-userRoutes.put("/:id", authMiddleware, updateUserCtrl);
+userRoutes.put("/", authMiddleware, updateUserCtrl);
 userRoutes.delete("/:id", deleteUsersCtrl);
 userRoutes.get("/:id", fetchUserDetailsCtrl);
 
