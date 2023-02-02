@@ -146,7 +146,7 @@ userSchema.virtual('posts',{
 //Verify account
 userSchema.methods.createAccountVerificationToken =async function(){
 
-    //crate a token
+    //create a token
     const verificationToken = crypto.randomBytes(32).toString("hex")
     this.accountVerificationToken = crypto.createHash('sha256').update(verificationToken).digest("hex");
     //token expire after 10 minutes

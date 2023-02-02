@@ -47,6 +47,7 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
       profilePhoto: userFound?.profilePhoto,
       isAdmin: userFound?.isAdmin,
       token: generateToken(userFound?._id),
+      isVerified: userFound?.isAccountVerified
     });
   } else {
     res.status(401);
@@ -273,9 +274,9 @@ const unBlockUserCtrl = expressAsyncHandler(async (req, res) => {
 //----------------------------
 
 const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
-  const loginUser = req.user.id;
-  console.log(loginUser);
-  const user = await User.findById(loginUser);
+  const loginUserId = req.user.id;
+  console.log(loginUserId);
+  const user = await User.findById(loginUserId);
   console.log(user);
 
   let transporter = nodemailer.createTransport({
@@ -285,15 +286,15 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
       pass: process.env.PASSWORD,
     },
   });
-  const loginUserId = req.user.id;
+  // const loginUserId = req.user.id;
   // const user = await User.findById(loginUserId);
   // console.log(user);
   try {
     //generate token
-    const verificationToken = await user.createAccountVerificationToken();
+    const verificationToken = await user?.createAccountVerificationToken();
     //save the user
     await user.save();
-    console.log(verificationToken);
+    console.log(verificationToken,"generated token ");
 
     const resetURL = `if you are yet to verify your account,verify now within 10  minutes, otherwise ignore this message
      <a href="http://localhost:3000/verify-account/${verificationToken}"> click to verify</a>`;
