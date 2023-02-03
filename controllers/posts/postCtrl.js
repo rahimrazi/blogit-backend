@@ -162,7 +162,7 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   }
   //Toggle
   //remove the user if he has liked the post
-  else if (isLiked) {
+  if (isLiked) {
     const post = await Post.findByIdAndUpdate(
       postId,
       {
@@ -218,7 +218,7 @@ const toggleAddDisLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   }
   //toggling
   //Remove this user from dislikes if already disliked
-  else if (isDisLiked) {
+  if (isDisLiked) {
     const post = await Post.findByIdAndUpdate(
       postId,
       {
