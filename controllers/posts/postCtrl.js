@@ -6,20 +6,25 @@ const fs = require("fs");
 const validateMongodbId = require("../../utils/validateMongodbId");
 const User = require("../../model/user/User");
 const cloudinaryUploadImg = require("../../utils/cloudinary");
+const blockUser = require("../../utils/blockUser");
+const { blockUserCtrl } = require("../users/usersCtrl");
 //---------------
 //Create Post
 //---------------
 
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
-
+  blockUser(req.user)
   // validateMongodbId(req.body.user)
   //check for bad words
   let filter = new Filter();
-  const isProfane = filter.isProfane(req.body.title, req.body.description);
+  const isProfane = filter.isProfane(req?.body?.description);
+  
+  
   //block user
   if (isProfane) {
-    const user = await User.findByIdAndUpdate(_id, {
+    console.log(isProfane,1111);
+      await User.findByIdAndUpdate(_id, {
       isBlocked: true,
     });
     throw new Error(
@@ -95,7 +100,7 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
 const updatePostCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
-
+  blockUser(req.user)
   try {
     const post = await Post.findByIdAndUpdate(
       id,

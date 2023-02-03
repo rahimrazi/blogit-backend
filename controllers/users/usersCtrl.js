@@ -6,6 +6,7 @@ const User = require("../../model/user/User");
 const validateMongodbId = require("../../utils/validateMongodbId");
 const crypto = require("crypto");
 const cloudinaryUploadImg = require("../../utils/cloudinary");
+const blockUser = require("../../utils/blockUser");
 
 //----------------------------------------------------------------
 //Register
@@ -137,6 +138,7 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
 
 const updateUserCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req?.user;
+  blockUser(req?.user)
   console.log(_id);
   validateMongodbId(_id);
 
@@ -363,6 +365,7 @@ const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
 const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   //find the logged in user
   const { _id } = req.user;
+  blockUser(req?.user)
 
   //1.get the path to image file
   const localPath = `public/images/profile/${req.file.filename}`;
