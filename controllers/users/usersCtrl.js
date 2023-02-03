@@ -7,7 +7,6 @@ const validateMongodbId = require("../../utils/validateMongodbId");
 const crypto = require("crypto");
 const cloudinaryUploadImg = require("../../utils/cloudinary");
 
-
 //----------------------------------------------------------------
 //Register
 //----------------------------------------------------------------
@@ -47,7 +46,7 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
       profilePhoto: userFound?.profilePhoto,
       isAdmin: userFound?.isAdmin,
       token: generateToken(userFound?._id),
-      isVerified: userFound?.isAccountVerified
+      isVerified: userFound?.isAccountVerified,
     });
   } else {
     res.status(401);
@@ -107,9 +106,27 @@ const fetchUserDetailsCtrl = expressAsyncHandler(async (req, res) => {
 const userProfileCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
+  //who visited the profile
+  //1. find the logged in user
+  //2. check this particular user is already there in the array of viewed profile
+
+  // getting the logged in User
+  const loginUserId = req?.user?._id?.toString();
+
   try {
-    const myProfile = await User.findById(id).populate("posts");
-    res.json(myProfile);
+    const myProfile = await User.findById(id).populate("posts").populate("viewedBy");
+    //checking already viewed
+    const alreadyViewed = myProfile?.viewedBy?.find((user) => {
+      return user?._id?.toString() === loginUserId;
+    });
+    if (alreadyViewed) {
+      res.json(myProfile);
+    }else{
+      const profile = await User.findByIdAndUpdate(myProfile?._id,{
+        $push:{viewedBy:loginUserId}
+      })
+      res.json(profile)
+    }
   } catch (error) {
     res.json(error);
   }
@@ -294,7 +311,7 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
     const verificationToken = await user?.createAccountVerificationToken();
     //save the user
     await user.save();
-    console.log(verificationToken,"generated token ");
+    console.log(verificationToken, "generated token ");
 
     const resetURL = `if you are yet to verify your account,verify now within 10  minutes, otherwise ignore this message
      <a href="http://localhost:3000/verify-account/${verificationToken}"> click to verify</a>`;
@@ -311,7 +328,7 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
         console.log("Error Occurs", err);
       } else {
         console.log("Email sent");
-        res.json(resetURL)
+        res.json(resetURL);
       }
     });
   } catch (error) {
@@ -319,44 +336,48 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 //-------------------------
-//account verification 
+//account verification
 //----------------------------
 
 const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
-  const {token} = req.body
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+  const { token } = req.body;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   console.log(hashedToken);
 
   //find this user by token
   const userFound = await User.findOne({
     accountVerificationToken: hashedToken,
-    accountVerificationTokenExpires: {$gt:new Date()}
+    accountVerificationTokenExpires: { $gt: new Date() },
   });
-  if(!userFound) throw new Error("token expired,try again")
+  if (!userFound) throw new Error("token expired,try again");
   //update the property to true
-  userFound.isAccountVerified = true
-  userFound.accountVerificationToken=undefined;
-  userFound.accountVerificationTokenExpires=undefined
-  await userFound.save()
- res.json(userFound)
-})
+  userFound.isAccountVerified = true;
+  userFound.accountVerificationToken = undefined;
+  userFound.accountVerificationTokenExpires = undefined;
+  await userFound.save();
+  res.json(userFound);
+});
 //-------------------------
 //profile pic upload
 //----------------------------
 const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   //find the logged in user
-  const{_id}=req.user
-  
+  const { _id } = req.user;
+
   //1.get the path to image file
   const localPath = `public/images/profile/${req.file.filename}`;
-  
-  //2.upload to cloudinary
-  const imgUploaded =await cloudinaryUploadImg(localPath);
 
-  const foundUser = await User.findByIdAndUpdate(_id,{
-    profilePhoto: imgUploaded?.url
-  },{new:true})
-  fs.unlinkSync(localPath)
+  //2.upload to cloudinary
+  const imgUploaded = await cloudinaryUploadImg(localPath);
+
+  const foundUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      profilePhoto: imgUploaded?.url,
+    },
+    { new: true }
+  );
+  fs.unlinkSync(localPath);
   res.json(imgUploaded);
 });
 //exports
@@ -375,5 +396,5 @@ module.exports = {
   unBlockUserCtrl,
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
-  profilePhotoUploadCtrl
+  profilePhotoUploadCtrl,
 };
