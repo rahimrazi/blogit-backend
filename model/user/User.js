@@ -125,6 +125,14 @@ userSchema.virtual('posts',{
     localField:'_id'
 })
 
+// Account Type
+userSchema.virtual('accountType').get(function(){
+    const totalFollowers = this.followers?.length;
+    return totalFollowers >= 1 ? "Pro Account":"Starter Account"
+})
+
+
+
 //hashing the password before saving it to the database
  userSchema.pre("save",async function (next) {
     
