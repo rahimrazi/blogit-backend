@@ -14,6 +14,7 @@ const { blockUserCtrl } = require("../users/usersCtrl");
 
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
+  // display messag if user is blocked
   blockUser(req.user)
   // validateMongodbId(req.body.user)
   //check for bad words
@@ -31,6 +32,11 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
       "creating failed because post contains profane words and u have been blocked"
     );
   }
+
+  //prevent user if his account is a starter account from creating more than 2 posts
+  if(req?.user?.accountType === "Starter Account" && req?.user?.postCount >= 2){ 
+    throw new Error (' starter account can create only 2 posts, Get more followers')}
+
   //1.get the path to image file
   const localPath = `public/images/posts/${req.file.filename}`;
 
@@ -43,6 +49,16 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
       image: imgUploaded?.url,
       user: _id,
     });
+    //update the user post count
+    await User.findByIdAndUpdate(
+      _id,{
+        $inc:{postCount:1},
+      },
+      {
+        new:true,
+      }
+    );
+    
     res.json(post);
     //remove uploaded img
     fs.unlinkSync(localPath);
