@@ -37,6 +37,7 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //check if user Exists
   const userFound = await User.findOne({ email });
+ 
   //check if blocked
   if(userFound?.isBlocked) throw new Error ("access denied , you are blocked")
   //Check if password is matching
@@ -385,6 +386,30 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   fs.unlinkSync(localPath);
   res.json(imgUploaded);
 });
+
+
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+//chat
+
+//get all users
+
+const allUsers= expressAsyncHandler(async(req,res)=>{
+  const keyword = req?.query?.search ?{
+    $or:[
+      { name: {$regex:req?.query?.search, $options: "i"}},
+      { email: {$regex:req?.query?.search, $options: "i"}}
+    ]
+  }:{};
+
+  const users = await User.find(keyword).find({_id:{$ne:req?.user?._id}})
+  res.send(users)
+
+ 
+  
+})
+
+
 //exports
 module.exports = {
   userRegisterCtrl,
@@ -402,4 +427,6 @@ module.exports = {
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
   profilePhotoUploadCtrl,
+
+  allUsers
 };

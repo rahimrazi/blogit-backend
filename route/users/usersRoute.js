@@ -15,6 +15,7 @@ const {
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
   profilePhotoUploadCtrl,
+  allUsers,
   
 } = require("../../controllers/users/usersCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
@@ -48,5 +49,9 @@ userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/", authMiddleware, updateUserCtrl);
 userRoutes.delete("/:id", deleteUsersCtrl);
 userRoutes.get("/:id", fetchUserDetailsCtrl);
+
+
+//chats 
+userRoutes.get("/chat/allusers",allUsers)
 
 module.exports = userRoutes;

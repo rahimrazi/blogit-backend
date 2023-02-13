@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\rz\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add bad-words
+  C:\Program Files\nodejs\node.exe C:\Users\rz\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js remove mongoose
 
 PATH: 
   C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\dotnet\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\rz\AppData\Local\Microsoft\WindowsApps;C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin;C:\Users\rz\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\rz\AppData\Roaming\npm;C:\Program Files\MongoDB\Server\6.0\bin;C:\mongosh-1.5.4\bin;
@@ -14,8 +14,12 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: connect ETIMEDOUT 104.16.26.35:443
-      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1247:16)
+  SyntaxError: D:\learnings\Week 18\BlogIT\Backend\package.json: Unexpected token m in JSON at position 656
+      at JSON.parse (<anonymous>)
+      at C:\Users\rz\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (C:\Users\rz\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:310:30)
+      at C:\Users\rz\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:321:13
 
 npm manifest: 
   {
@@ -32,6 +36,7 @@ npm manifest:
     "license": "ISC",
     "dependencies": {
       "@sendgrid/mail": "^7.7.0",
+      "bad-words": "^3.0.4",
       "bcryptjs": "^2.4.3",
       "cloudinary": "^1.33.0",
       "cors": "^2.8.5",
@@ -46,6 +51,8 @@ npm manifest:
       "sharp": "^0.31.3"
     }
   }
+  
+  mongoose": "^5.12.9
 
 yarn manifest: 
   No manifest
@@ -164,6 +171,18 @@ Lockfile:
     integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
     dependencies:
       follow-redirects "^1.14.8"
+  
+  bad-words@^3.0.4:
+    version "3.0.4"
+    resolved "https://registry.yarnpkg.com/bad-words/-/bad-words-3.0.4.tgz#044c83935c4c363a905d47b5e0179f7241fecaec"
+    integrity sha512-v/Q9uRPH4+yzDVLL4vR1+S9KoFgOEUl5s4axd6NIAq8SV2mradgi4E8lma/Y0cw1ltVdvyegCQQKffCPRCp8fg==
+    dependencies:
+      badwords-list "^1.0.0"
+  
+  badwords-list@^1.0.0:
+    version "1.0.0"
+    resolved "https://registry.yarnpkg.com/badwords-list/-/badwords-list-1.0.0.tgz#5e9856dbf13482a295c3b0b304afb9d4cfc5c579"
+    integrity sha512-oWhaSG67e+HQj3OGHQt2ucP+vAPm1wTbdp2aDHeuh4xlGXBdWwzZ//pfu6swf5gZ8iX0b7JgmSo8BhgybbqszA==
   
   balanced-match@^1.0.0:
     version "1.0.2"
