@@ -383,7 +383,7 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  fs.unlinkSync(localPath);
+  //  fs.unlinkSync(localPath);
   res.json(imgUploaded);
 });
 

@@ -128,7 +128,7 @@ userSchema.virtual('posts',{
 // Account Type
 userSchema.virtual('accountType').get(function(){
     const totalFollowers = this.followers?.length;
-    return totalFollowers >= 1 ? "Pro Account":"Starter Account"
+    return totalFollowers >= 0 ? "Pro Account":"Starter Account"
 })
 
 
