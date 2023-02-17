@@ -76,10 +76,10 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
   try {
     //check if it has category
     if(hasCategory){
-      const posts = await Post.find({category:hasCategory}).populate("user").populate('comments').sort({'createdAt':-1});
+      const posts = await Post.find({category:hasCategory, isBlocked:false}).populate("user").populate('comments').sort({'createdAt':-1});
       res.json(posts)
     }else{
-    const posts = await Post.find({}).populate("user").populate('comments').sort({'createdAt':-1});
+    const posts = await Post.find({ isBlocked:false}).populate("user").populate('comments').sort({'createdAt':-1});
     res.json(posts);
   }
   } catch (error) {
@@ -262,6 +262,62 @@ const toggleAddDisLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// //-------------report a post---------------
+const reportPostController = expressAsyncHandler(async(req,res) =>{
+  //find the post to report
+  const { postId } = req.body;
+  const post = await Post.findById(postId);
+
+
+   //find the login user
+   const loginUserId = req?.user?._id;
+   const reportUserId = post?.reports?.includes(loginUserId)
+     //find the user has reported this post ?
+    const isReported = post?.isReported;
+    if (!isReported || !reportUserId ) {
+      const post = await Post.findByIdAndUpdate(
+        postId,
+        {
+          $push: { reports: loginUserId },
+          isReported: true,
+        },
+        { new: true }
+      );
+      res.json(post);
+    }else{
+      res.json(post)
+    }
+
+ })
+
+
+ //--------fetch reported posts---------------
+const fetchReportedPostController = expressAsyncHandler(async (req, res) => {
+  try {
+    const posts = await Post.find({isReported:true }).populate('user');
+    console.log(posts,1231231231)
+    res.json(posts);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+//-------------Block post---------------
+const blockPostController = expressAsyncHandler(async (req, res) => {
+  const { postId } = req.body;
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    {
+      isBlocked: true,
+    },
+    {
+      new: true,
+    }
+  );
+  res.json(post);
+});
+
 module.exports = {
   createPostCtrl,
   fetchPostsCtrl,
@@ -269,5 +325,5 @@ module.exports = {
   updatePostCtrl,
   deletePostCtrl,
   toggleAddLikeToPostCtrl,
-  toggleAddDisLikeToPostCtrl,
+  toggleAddDisLikeToPostCtrl,blockPostController,fetchReportedPostController,reportPostController
 };

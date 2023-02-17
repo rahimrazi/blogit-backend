@@ -53,6 +53,22 @@ const postSchema = new mongoose.Schema(
       default:
         "https://cdn.pixabay.com/photo/2020/10/25/09/23/seagull-5683637_960_720.jpg",
     },
+    isBlocked:{
+      type: Boolean,
+      default: false,
+    },
+    isReported: {
+      type: Boolean,
+      default: false,
+    },
+    reports: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+    },
   },
   {
     toJSON: {
@@ -64,12 +80,12 @@ const postSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-//populate 
-postSchema.virtual('comments',{
-  ref:"Comment",
-  foreignField:"post",
-  localField:"_id"
-})
+//populate
+postSchema.virtual("comments", {
+  ref: "Comment",
+  foreignField: "post",
+  localField: "_id",
+});
 
 //compile
 const Post = mongoose.model("Post", postSchema);
