@@ -30,6 +30,7 @@ app.use(express.json())
 //cors
 app.use(cors())
 app.get("/",(req,res)=>{
+  console.log("heloo blogit server")
   res.send("hello blogit server")
 })
 //Users route
