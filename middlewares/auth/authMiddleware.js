@@ -17,6 +17,9 @@ const authMiddleware = expressAsyncHandler(async (req, res,next) => {
             const user = await User.findById(decoded?.id).select('-password');
             //attach the user to the request object
             req.user = user;
+            //check if blocked
+            if(user?.isBlocked) throw new Error ("access denied , you are blocked")
+
             next();
 
             }else{

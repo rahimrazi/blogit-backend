@@ -44,8 +44,8 @@ postRoute.delete("/:id", authMiddleware, deletePostCtrl);
 
 
 postRoute.post("/report-post",authMiddleware, reportPostController);
-postRoute.get("/reported-list",fetchReportedPostController);
-postRoute.post("/block-post",blockPostController);
+postRoute.get("/reported-list",authMiddleware,fetchReportedPostController);
+postRoute.post("/block-post",authMiddleware,blockPostController);
 
 
 

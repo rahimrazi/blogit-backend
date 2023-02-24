@@ -29,7 +29,11 @@ dbConnect();
 app.use(express.json())
 //cors
 app.use(cors())
+app.get("/",(req,res)=>{
+  res.send("hello blogit server")
+})
 //Users route
+
 app.use('/api/users',userRoutes)
 //Posts route
 app.use('/api/posts',postRoute)
