@@ -55,6 +55,7 @@ const accessChat = expressAsyncHandler(async (req, res) => {
 //@access          Protected
 const fetchChats = expressAsyncHandler(async (req, res) => {
   try {
+    console.log("hi chat")
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
