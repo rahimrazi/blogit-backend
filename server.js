@@ -78,8 +78,8 @@ const io = require("socket.io")(server,{
     pingTimeout:60000,
     cors:{
         // origin: 'https://www.blogit.pizahub.online',
-        methods: ["GET", "POST"],
-        origin:["https://blogit.pizahub.online"],
+        // methods: ["GET", "POST"],
+        origin:"http://blogit.pizahub.online"
     }
 })
 
