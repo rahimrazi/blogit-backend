@@ -163,6 +163,17 @@ userSchema.methods.createAccountVerificationToken =async function(){
     return verificationToken;
 }
 
+// Forget Password Token
+userSchema.methods.createPasswordResetToken =async function(){
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+     //token expire after 10 minutes
+    this.passwordResetTokenExpires = Date.now()+30*60*1000
+
+    return resetToken;
+}
+
 
 //compile schema into model
 

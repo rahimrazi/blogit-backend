@@ -16,8 +16,12 @@ const {
   accountVerificationCtrl,
   profilePhotoUploadCtrl,
   allUsers,
+  forgetPasswordToken,
+  passwordResetCtrl,
+  
   
 } = require("../../controllers/users/usersCtrl");
+
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const {
   photoUpload,profilePhotoResize,
@@ -49,6 +53,9 @@ userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/", authMiddleware, updateUserCtrl);
 userRoutes.delete("/:id", deleteUsersCtrl);
 userRoutes.get("/:id", fetchUserDetailsCtrl);
+userRoutes.post("/forget-password-token", forgetPasswordToken);
+userRoutes.put("/reset-password", passwordResetCtrl);
+
 
 
 //chats 

@@ -388,6 +388,88 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 
+//-------------------------
+//Forget Password Token Gernator
+//----------------------------
+const forgetPasswordToken = expressAsyncHandler(async(req,res)=>{
+  //find the user by Email
+
+  const {email} = req.body;
+  const user = await User.findOne({email});
+  if(!user) throw new Error("User not Found")
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  try {
+    const token  = await user.createPasswordResetToken();
+    
+    await user.save();
+    console.log(email,"token");
+
+    const resetURL = `if you want to reset your password,reset within 10  minutes, otherwise ignore this message
+     <a href="http://localhost:3000/reset-password/${token}"> click to verify</a>`;
+    let mailOptions = {
+      from: "12abdulrahim21@gmail.com",
+      to: email,
+      
+      subject: "blogit reset password",
+      message: "reset your password now",
+      html: resetURL,
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+      if (err) {
+        console.log("Error Occurs", err);
+      } else {
+        console.log("Email sent");
+        res.json(`a verification mail sent to ${email},reset within 10 min,${resetURL}`);
+      }
+    });
+
+
+
+
+
+   
+  } catch (error) {
+    
+  }
+})
+
+//-------------------------
+//Password reset
+//----------------------------
+
+const passwordResetCtrl = expressAsyncHandler(async(req,res)=>{
+  const {token,password} = req.body
+  const hashedToken = crypto.createHash('sha256').update(token).digest("hex");
+
+  //find this user by token
+  const user = await User.findOne({passwordResetToken:hashedToken,passwordResetExpires:{ $gt: new Date() }})
+
+  if(!user) throw new Error("token expired, try again later")
+
+  //update the password
+
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  res.json(user)
+
+})
+
+
+
+
+
+
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //chat
@@ -413,6 +495,8 @@ const allUsers= expressAsyncHandler(async(req,res)=>{
 //exports
 module.exports = {
   userRegisterCtrl,
+  forgetPasswordToken,
+  passwordResetCtrl,
   loginUserCtrl,
   fetchUsersCtrl,
   deleteUsersCtrl,

@@ -79,7 +79,7 @@ const io = require("socket.io")(server,{
     cors:{
         // origin: 'https://www.blogit.pizahub.online',
         // methods: ["GET", "POST"],
-        origin:"http://blogit.pizahub.online"
+        origin:"https://www.blogit.pizahub.online"
     }
 })
 
