@@ -1,4 +1,4 @@
-const expressAsyncHandler = require("express-Async-Handler");
+const expressAsyncHandler = require("express-async-handler");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 const generateToken = require("../../config/token/generateToken");
