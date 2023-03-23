@@ -323,7 +323,7 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
     console.log(verificationToken, "generated token ");
 
     const resetURL = `if you are yet to verify your account,verify now within 10  minutes, otherwise ignore this message
-     <a href="http://localhost:3000/verify-account/${verificationToken}"> click to verify</a>`;
+     <a href="https://blogit.pizahub.online/verify-account/${verificationToken}"> click to verify</a>`;
     let mailOptions = {
       from: "12abdulrahim21@gmail.com",
       to: user?.email,
@@ -417,7 +417,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
     console.log(email, "token");
 
     const resetURL = `if you want to reset your password,reset within 10  minutes, otherwise ignore this message
-     <a href="http://localhost:3000/reset-password/${token}"> click to verify</a>`;
+     <a href="https://blogit.pizahub.online/reset-password/${token}"> click to verify</a>`;
     let mailOptions = {
       from: "12abdulrahim21@gmail.com",
       to: email,
