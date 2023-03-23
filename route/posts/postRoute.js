@@ -10,6 +10,7 @@ const {
   reportPostController,
   fetchReportedPostController,
   blockPostController,
+  unBlockPostController,
 } = require("../../controllers/posts/postCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const {
@@ -46,7 +47,7 @@ postRoute.delete("/:id", authMiddleware, deletePostCtrl);
 postRoute.post("/report-post",authMiddleware, reportPostController);
 postRoute.get("/reported-list",authMiddleware,fetchReportedPostController);
 postRoute.post("/block-post",authMiddleware,blockPostController);
-
+postRoute.post("/unblock-post",authMiddleware,unBlockPostController);
 
 
 

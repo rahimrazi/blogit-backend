@@ -37,7 +37,8 @@ const createCommentCtrl = expressAsyncHandler(async (req, res) => {
 
 const fetchAllComments = expressAsyncHandler(async (req, res) => {
   try {
-    const comment = await Comment.find({}).sort("{-created}");
+    const comment = await Comment.find({}).sort({createdAt:-1})
+    
     res.json(comment);
   } catch (error) {
     res.json(error);
@@ -53,6 +54,7 @@ const fetchCommentCtrl = expressAsyncHandler(async (req, res) => {
   validateMongodbId(id)
   try {
     const comment = await Comment.findById(id);
+    console.log(comment)
     res.json(comment);
   } catch (error) {
     res.json(error);

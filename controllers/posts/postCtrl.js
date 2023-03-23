@@ -318,6 +318,22 @@ const blockPostController = expressAsyncHandler(async (req, res) => {
   res.json(post);
 });
 
+//-------------UnBlock post---------------
+const unBlockPostController = expressAsyncHandler(async (req, res) => {
+  const { postId } = req.body;
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    {
+      isBlocked: false,
+    },
+    {
+      new: true,
+    }
+  );
+  res.json(post);
+});
+
 module.exports = {
   createPostCtrl,
   fetchPostsCtrl,
@@ -325,5 +341,5 @@ module.exports = {
   updatePostCtrl,
   deletePostCtrl,
   toggleAddLikeToPostCtrl,
-  toggleAddDisLikeToPostCtrl,blockPostController,fetchReportedPostController,reportPostController
+  toggleAddDisLikeToPostCtrl,blockPostController,fetchReportedPostController,reportPostController,unBlockPostController
 };

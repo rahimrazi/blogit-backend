@@ -34,12 +34,14 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
 // User Login
 
 const loginUserCtrl = expressAsyncHandler(async (req, res) => {
+  console.log("working")
   const { email, password } = req.body;
   //check if user Exists
   const userFound = await User.findOne({ email });
- 
+  
+
   //check if blocked
-  if(userFound?.isBlocked) throw new Error ("access denied , you are blocked")
+  if (userFound?.isBlocked) throw new Error("access denied , you are blocked");
   //Check if password is matching
   if (userFound && (await userFound.isPasswordMatched(password))) {
     res.json({
@@ -118,18 +120,20 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
   const loginUserId = req?.user?._id?.toString();
 
   try {
-    const myProfile = await User.findById(id).populate("posts").populate("viewedBy");
+    const myProfile = await User.findById(id)
+      .populate("posts")
+      .populate("viewedBy");
     //checking already viewed
     const alreadyViewed = myProfile?.viewedBy?.find((user) => {
       return user?._id?.toString() === loginUserId;
     });
     if (alreadyViewed) {
       res.json(myProfile);
-    }else{
-      const profile = await User.findByIdAndUpdate(myProfile?._id,{
-        $push:{viewedBy:loginUserId}
-      })
-      res.json(profile)
+    } else {
+      const profile = await User.findByIdAndUpdate(myProfile?._id, {
+        $push: { viewedBy: loginUserId },
+      });
+      res.json(profile);
     }
   } catch (error) {
     res.json(error);
@@ -141,7 +145,7 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
 
 const updateUserCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req?.user;
-  blockUser(req?.user)
+  blockUser(req?.user);
   console.log(_id);
   validateMongodbId(_id);
 
@@ -368,7 +372,7 @@ const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
 const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   //find the logged in user
   const { _id } = req.user;
-  blockUser(req?.user)
+  blockUser(req?.user);
 
   //1.get the path to image file
   const localPath = `public/images/profile/${req.file.filename}`;
@@ -383,20 +387,18 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
     },
     { new: true }
   );
-   fs.unlinkSync(localPath);
+  fs.unlinkSync(localPath);
   res.json(imgUploaded);
 });
-
 
 //-------------------------
 //Forget Password Token Gernator
 //----------------------------
-const forgetPasswordToken = expressAsyncHandler(async(req,res)=>{
+const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
   //find the user by Email
 
-  const {email} = req.body;
-  const user = await User.findOne({email});
-  if(!user) throw new Error("User not Found")
+  const { email } = req.body;
+  
 
   let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -405,19 +407,21 @@ const forgetPasswordToken = expressAsyncHandler(async(req,res)=>{
       pass: process.env.PASSWORD,
     },
   });
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not Found");
 
   try {
-    const token  = await user.createPasswordResetToken();
-    
+    const token = await user.createPasswordResetToken();
+
     await user.save();
-    console.log(email,"token");
+    console.log(email, "token");
 
     const resetURL = `if you want to reset your password,reset within 10  minutes, otherwise ignore this message
      <a href="http://localhost:3000/reset-password/${token}"> click to verify</a>`;
     let mailOptions = {
       from: "12abdulrahim21@gmail.com",
       to: email,
-      
+
       subject: "blogit reset password",
       message: "reset your password now",
       html: resetURL,
@@ -427,48 +431,41 @@ const forgetPasswordToken = expressAsyncHandler(async(req,res)=>{
         console.log("Error Occurs", err);
       } else {
         console.log("Email sent");
-        res.json(`a verification mail sent to ${email},reset within 10 min,${resetURL}`);
+        res.json(
+          `a verification mail sent to ${email},reset within 10 min,${resetURL}`
+        );
       }
     });
-
-
-
-
-
-   
   } catch (error) {
-    
+
   }
-})
+});
 
 //-------------------------
 //Password reset
 //----------------------------
 
-const passwordResetCtrl = expressAsyncHandler(async(req,res)=>{
-  const {token,password} = req.body
-  const hashedToken = crypto.createHash('sha256').update(token).digest("hex");
+const passwordResetCtrl = expressAsyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   //find this user by token
-  const user = await User.findOne({passwordResetToken:hashedToken,passwordResetExpires:{ $gt: new Date() }})
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpires: { $gt: Date.now()},
+  });
 
-  if(!user) throw new Error("token expired, try again later")
+  if (!user) throw new Error("token expired, try again later");
 
   //update the password
 
   user.password = password;
   user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+  user.passwordResetTokenExpires = undefined;
 
-  res.json(user)
-
-})
-
-
-
-
-
-
+  await user.save();
+  res.json(user);
+});
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -476,21 +473,19 @@ const passwordResetCtrl = expressAsyncHandler(async(req,res)=>{
 
 //get all users
 
-const allUsers= expressAsyncHandler(async(req,res)=>{
-  const keyword = req?.query?.search ?{
-    $or:[
-      { name: {$regex:req?.query?.search, $options: "i"}},
-      { email: {$regex:req?.query?.search, $options: "i"}}
-    ]
-  }:{};
+const allUsers = expressAsyncHandler(async (req, res) => {
+  const keyword = req?.query?.search
+    ? {
+        $or: [
+          { name: { $regex: req?.query?.search, $options: "i" } },
+          { email: { $regex: req?.query?.search, $options: "i" } },
+        ],
+      }
+    : {};
 
-  const users = await User.find(keyword).find({_id:{$ne:req?.user?._id}})
-  res.send(users)
-
- 
-  
-})
-
+  const users = await User.find(keyword).find({ _id: { $ne: req?.user?._id } });
+  res.send(users);
+});
 
 //exports
 module.exports = {
@@ -512,5 +507,5 @@ module.exports = {
   accountVerificationCtrl,
   profilePhotoUploadCtrl,
 
-  allUsers
+  allUsers,
 };
