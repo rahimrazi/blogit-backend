@@ -396,7 +396,7 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
 //----------------------------
 const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
   //find the user by Email
-
+  console.log(1)
   const { email } = req.body;
   
 
@@ -409,10 +409,10 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
   });
   const user = await User.findOne({ email });
   if (!user) throw new Error("User not Found");
-
+  console.log(2)
   try {
     const token = await user.createPasswordResetToken();
-
+    console.log(3)
     await user.save();
     console.log(email, "token");
 
@@ -426,6 +426,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
       message: "reset your password now",
       html: resetURL,
     };
+    console.log(4)
     transporter.sendMail(mailOptions, function (err, data) {
       if (err) {
         console.log("Error Occurs", err);
