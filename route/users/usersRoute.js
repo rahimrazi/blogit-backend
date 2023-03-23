@@ -27,7 +27,8 @@ const {
   photoUpload,profilePhotoResize,
 } = require("../../middlewares/uploads/photoUpload");
 const userRoutes = express.Router();
-
+userRoutes.post("/forget-password-token", forgetPasswordToken);
+userRoutes.put("/reset-password", passwordResetCtrl);
 userRoutes.post("/register", userRegisterCtrl);
 userRoutes.post("/login", loginUserCtrl);
 userRoutes.get("/", authMiddleware, fetchUsersCtrl);
@@ -53,8 +54,7 @@ userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/", authMiddleware, updateUserCtrl);
 userRoutes.delete("/:id", deleteUsersCtrl);
 userRoutes.get("/:id", fetchUserDetailsCtrl);
-userRoutes.post("/forget-password-token", forgetPasswordToken);
-userRoutes.put("/reset-password", passwordResetCtrl);
+
 
 
 
